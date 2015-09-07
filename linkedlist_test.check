@@ -1,0 +1,72 @@
+#include "linkedlist.h"
+
+
+#test test_linkedlist_create_and_append
+  LinkedList *crap0 = create_linkedlist();
+  int a = 0;
+  append_to_linkedlist(crap0, (void *) &a, sizeof(a));
+  LinkedList *crap1 = create_linkedlist();
+  char b = 'a';
+  char c = 'b';
+  append_to_linkedlist(crap0, (void *) &c, sizeof(c));
+  append_to_linkedlist(crap1, (void *) &b, sizeof(b));
+  LinkedList *crap2 = create_linkedlist();
+  char *d = "abc\0";
+  char *e = "efg\0";
+  char *f = "qwe\0";
+  append_to_linkedlist(crap2, (void *) d, (size_t) strlen(d));
+  append_to_linkedlist(crap1, (void *) e, (size_t) strlen(e));	
+  append_to_linkedlist(crap0, (void *) f, (size_t) strlen(f));
+  LinkedList *crap3 = create_linkedlist();
+  short g = 0;
+  short h = 1;
+  short j = 2;
+  short k = 3;
+  append_to_linkedlist(crap3, (void *) &g, sizeof(g));
+  append_to_linkedlist(crap2, (void *) &h, sizeof(h));	
+  append_to_linkedlist(crap1, (void *) &j, sizeof(j));
+  append_to_linkedlist(crap0, (void *) &k, sizeof(k));
+  LinkedList *crap4 = create_linkedlist();
+  g = 1;
+  h = 2;
+  j = 3;
+  k = 4;
+  short l = 5;
+  append_to_linkedlist(crap4, (void *) &l, sizeof(l));
+  append_to_linkedlist(crap3, (void *) &g, sizeof(g));
+  append_to_linkedlist(crap2, (void *) &h, sizeof(h));	
+  append_to_linkedlist(crap1, (void *) &j, sizeof(j));
+  append_to_linkedlist(crap0, (void *) &k, sizeof(k));
+  ck_assert_int_eq(crap4->count, 1);
+  ck_assert_int_eq(crap3->count, 2);
+  ck_assert_int_eq(crap2->count, 3);
+  ck_assert_int_eq(crap1->count, 4);
+  ck_assert_int_eq(crap0->count, 5);
+  ck_assert_int_eq(*((int *) crap0->first->next->next->next->next->data), 4);
+  ck_assert_int_eq(*((int *) crap1->first->next->next->next->data), 3);
+  ck_assert_int_eq(*((int *) crap2->first->next->next->data), 2);
+  ck_assert_int_eq(*((int *) crap3->first->next->data), 1);
+  ck_assert_int_eq(*((int *) crap4->first->data), 5);
+  ck_assert_int_eq(*((int *) crap0->first->next->next->next->data), 3);
+  ck_assert_int_eq(*((int *) crap1->first->next->next->data), 2);
+  ck_assert_int_eq(*((int *) crap2->first->next->data), 1);
+  ck_assert_int_eq(*((int *) crap3->first->data), 0);
+  ck_assert_str_eq(( (char *) crap0->first->next->next->data), "qwe");
+  ck_assert_str_eq(((char *) crap1->first->next->data), "efg");
+  ck_assert_str_eq(((char *) crap2->first->data), "abc");
+
+#test linkedlist_index
+  LinkedList *crap0 = create_linkedlist();
+  for(int i = 0; i < 100; i++){
+    append_to_linkedlist(crap0, (void *) &i, sizeof(int));
+  }
+  for(int a = 0; a < 100; a++){
+    if(a < 100){
+      int *b = (int *) get_index_data_linkedlist(crap0, a);
+      ck_assert(a == *b);
+    }
+  }
+
+
+    
+  
