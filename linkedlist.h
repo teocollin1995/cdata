@@ -21,5 +21,7 @@ LinkedListData *create_linkedlistdata(void *data,  size_t copysize);
 void append_to_linkedlist(LinkedList *list, void *data, size_t copysize);
 LinkedListData *get_index_linkedlist(LinkedList *list,  int index);
 void *get_index_data_linkedlist(LinkedList *list, int index);
-
+LinkedList *get_index_range_linkedlist(LinkedList *list, int start, int end);
 #endif
+
+
