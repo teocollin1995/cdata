@@ -57,16 +57,28 @@
 
 #test linkedlist_index
   LinkedList *crap0 = create_linkedlist();
-  for(int i = 0; i < 100; i++){
+  int i;
+  for(i = 0; i < 1000; i++){
     append_to_linkedlist(crap0, (void *) &i, sizeof(int));
   }
-  for(int a = 0; a < 100; a++){
-    if(a < 100){
+  int a;
+  for( a = 0; a < 1000; a++){
+    if(a < 1000){
       int *b = (int *) get_index_data_linkedlist(crap0, a);
       ck_assert(a == *b);
     }
   }
+      
 
 
-    
-  
+
+
+
+#test linkedlist_index_range
+      LinkedList *crap0 = create_linkedlist();
+      int i;
+      for(i = 0; i < 1000, i++){
+      	    append_to_linkedlist(crap0, (void *) &i, sizeof(int));
+      }
+      
+

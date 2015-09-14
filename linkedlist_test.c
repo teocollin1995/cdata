@@ -72,19 +72,30 @@ START_TEST(linkedlist_index)
 {
 #line 59
   LinkedList *crap0 = create_linkedlist();
-  for(int i = 0; i < 100; i++){
+  int i;
+  for(i = 0; i < 1000; i++){
     append_to_linkedlist(crap0, (void *) &i, sizeof(int));
   }
-  for(int a = 0; a < 100; a++){
-    if(a < 100){
+  int a;
+  for( a = 0; a < 1000; a++){
+    if(a < 1000){
       int *b = (int *) get_index_data_linkedlist(crap0, a);
       ck_assert(a == *b);
     }
   }
+      
 
 
-    
-  
+
+
+
+}
+END_TEST
+
+START_TEST(linkedlist_index_range)
+{
+#line 78
+
 }
 END_TEST
 
@@ -98,6 +109,7 @@ int main(void)
     suite_add_tcase(s1, tc1_1);
     tcase_add_test(tc1_1, test_linkedlist_create_and_append);
     tcase_add_test(tc1_1, linkedlist_index);
+    tcase_add_test(tc1_1, linkedlist_index_range);
 
     srunner_run_all(sr, CK_ENV);
     nf = srunner_ntests_failed(sr);

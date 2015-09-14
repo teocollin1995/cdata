@@ -14,6 +14,6 @@ clean:
 	rm -f test.o linkedlist.o test
 	rm -f linkedlist_test
 
-test_linkedlist:
+linkedlist_test:
 	checkmk linkedlist_test.check > linkedlist_test.c
-	gcc -Wall -o linkedlist_test linkedlist_test.c linkedlist.c -lcheck
+	gcc -Wall -std=c11 -o linkedlist_test linkedlist_test.c linkedlist.c -lcheck -lpthread -lrt -lm #check forgot to link these..

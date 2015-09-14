@@ -13,7 +13,7 @@ int main(){
   for(int a = 0; a < 101; a++){
     printf("a is %d\n", a);
     int *b =  get_index_data_linkedlist(crap0, a);
-    printf("Pointer is at %d\n", b);
+    printf("Pointer is at %d\n", *b);
     //printf("Value: %d\n", *b);
   }
   printf("%d\n", *((int *)crap0->first->data));

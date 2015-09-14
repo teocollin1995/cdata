@@ -38,7 +38,8 @@ void append_to_linkedlist(LinkedList *list, void *data, size_t copysize){
   }
   else{
     LinkedListData * listhead = list->first;
-    for(int listitter = 1; listitter < listcount; listitter++){
+    int listitter;
+    for(listitter = 1; listitter < listcount; listitter++){
       listhead = listhead->next;
     }
     listhead->next = create_linkedlistdata(data, copysize);
@@ -67,7 +68,8 @@ LinkedListData *get_index_linkedlist(LinkedList *list,  int index){
   
   LinkedListData *listhead = list->first;
   // we are starting at 0 so we can have 0 based indexing
-  for(int listitter = 0; listitter < index; listitter++){
+  int listitter;
+  for(listitter = 0; listitter < index; listitter++){
     listhead = listhead->next;
     //abstract this, clearly...
   }
@@ -90,6 +92,7 @@ void *get_index_data_linkedlist(LinkedList *list, int index){
 
 LinkedList *get_index_range_linkedlist(LinkedList *list, int start, int end){
   int listcount = list->count;
+  int returnlength = end - start;
   if(end -1 > listcount){
     return NULL;
   }
@@ -115,10 +118,20 @@ LinkedList *get_index_range_linkedlist(LinkedList *list, int start, int end){
   
   LinkedList *new = create_linkedlist();
   /* So, at this point, I could just call linkedlist_append a few times, but that would be dreadfully inefficient because each call to append will walk through the linked list, which is horrendous. Instead, we just walk through the two lists at the same time, generating the next element for the new list from the corresponding element of the old list. We don't just memcpy the whole thing because we want new refrences to the data each linked list void * data points to'. Also, using memcpy is a security whole that we should try to avoid as much as one can even when doing "generics" in C. I hope copying the data is better than just copying the struct. */
+  new->count = returnlength + 1;
+  new->first = create_linkedlistdata(listhead->data, listhead->datasize); //copy the first data; THis is why we don't count the first in return length
+  LinkedListData *newlisthead;
+  newlisthead =  new->first;
+  listhead = listhead->next; //advance
   
-  for(listitter = 1; listitter < returnlength; listitter++){
-    
+  for(listitter = 0; listitter < returnlength; listitter++){
+    newlisthead->next = create_linkedlistdata(listhead->data,listhead->datasize);
+    newlisthead = newlisthead->next;
+    listhead = listhead->next;
   }
+  
+
+  return new;
   
   
 
