@@ -54,6 +54,11 @@
   ck_assert_str_eq(( (char *) crap0->first->next->next->data), "qwe");
   ck_assert_str_eq(((char *) crap1->first->next->data), "efg");
   ck_assert_str_eq(((char *) crap2->first->data), "abc");
+  free_linkedlist(crap0);
+  free_linkedlist(crap1);
+  free_linkedlist(crap2);
+  free_linkedlist(crap3);
+  free_linkedlist(crap4);
 
 #test linkedlist_index
   LinkedList *crap0 = create_linkedlist();
@@ -68,17 +73,34 @@
       ck_assert(a == *b);
     }
   }
+  free_linkedlist(crap0);
+      
+#test create_linkedlist_range_test
+      LinkedList *crap0 = create_linkedlist_range(0, 1000);
+      ck_assert(crap0 != NULL);
+      int i;
+      LinkedListData *listhead = crap0->first;
+      for(i = 0; i <= 1000; i++){
+      	    int test = *((int *) listhead->data);
+	    ck_assert(i == test);	    
+	    listhead = listhead->next;
+      }
+      free_linkedlist(crap0);
+
+#test get_index_range_linkedlist_test
+      LinkedList *crap0 = create_linked_range(0,1000);
+      int three_itter = 0;
+      for(three_itter = 0; three_itter <= 1000-3; three_itter++){
+      		      LinkedList *three = get_index_range_linkedlist(crap0, three_itter, three_itter+3);
+		      int i;
+		      for(i = 0; i < 3; i++){
+		      	    ///WE COULD WRITE A FUCKING MAP FUNCTION
+		      }
       
 
 
+      }      
 
 
-
-#test linkedlist_index_range
-      LinkedList *crap0 = create_linkedlist();
-      int i;
-      for(i = 0; i < 1000, i++){
-      	    append_to_linkedlist(crap0, (void *) &i, sizeof(int));
-      }
       
 

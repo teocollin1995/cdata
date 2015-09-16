@@ -26,8 +26,44 @@ LinkedListData *create_linkedlistdata(void *data,  size_t copysize){
   result->next = NULL;
   return result;
 }
+void free_linkedlistdata(LinkedListData *listhead){
+  free((void *) listhead->data);
+  free((void *) listhead);
+}
 
 
+void free_linkedlist(LinkedList *list){
+  LinkedListData *listhead = list->first;
+  LinkedListData *next;
+  int listitter;
+  for(listitter = 0; listitter < list->count; listitter++){
+    next = listhead->next;
+    free_linkedlistdata(listhead);
+    listhead = next;
+
+  }
+  free((void *) list);
+}
+//union for int
+LinkedList *create_linkedlist_range(int start, int end){
+  if(!(start < end)){
+    return NULL;
+
+  }
+
+  LinkedList *result = create_linkedlist();
+  int i;
+  int intsize = sizeof(int);
+  result->first = create_linkedlistdata((void *) &start, intsize);
+  LinkedListData *listhead = result->first;
+  for(i = start + 1; i <= end; i++){
+    listhead->next = create_linkedlistdata((void *) &i, intsize);
+    listhead = listhead->next;
+  }
+  result->count = end - start + 1;
+  return result;
+
+}
 void append_to_linkedlist(LinkedList *list, void *data, size_t copysize){
   assert(copysize > 0);
   assert(list != NULL);
