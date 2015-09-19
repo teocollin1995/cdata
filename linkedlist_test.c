@@ -7,7 +7,7 @@
 
 #line 1 "linkedlist_test.check"
 #include "linkedlist.h"
-
+#include <assert.h>
 
 START_TEST(test_linkedlist_create_and_append)
 {
@@ -64,13 +64,18 @@ START_TEST(test_linkedlist_create_and_append)
   ck_assert_str_eq(( (char *) crap0->first->next->next->data), "qwe");
   ck_assert_str_eq(((char *) crap1->first->next->data), "efg");
   ck_assert_str_eq(((char *) crap2->first->data), "abc");
+  free_linkedlist(crap0);
+  free_linkedlist(crap1);
+  free_linkedlist(crap2);
+  free_linkedlist(crap3);
+  free_linkedlist(crap4);
 
 }
 END_TEST
 
 START_TEST(linkedlist_index)
 {
-#line 59
+#line 64
   LinkedList *crap0 = create_linkedlist();
   int i;
   for(i = 0; i < 1000; i++){
@@ -83,18 +88,186 @@ START_TEST(linkedlist_index)
       ck_assert(a == *b);
     }
   }
+  free_linkedlist(crap0);
+      
+}
+END_TEST
+
+START_TEST(create_linkedlist_range_test)
+{
+#line 79
+      LinkedList *crap0 = create_linkedlist_range(0, 1000);
+      ck_assert(crap0 != NULL);
+      int i;
+      LinkedListData *listhead = crap0->first;
+      for(i = 0; i <= 1000; i++){
+      	    int test = *((int *) listhead->data);
+	    ck_assert(i == test);	    
+	    listhead = listhead->next;
+      }
+      free_linkedlist(crap0);
+}
+END_TEST
+
+START_TEST(linkedlist_recount_test)
+{
+#line 90
+      LinkedList *crap0 = create_linkedlist_range(1,100);
+      ck_assert(100 == linkedlist_recount(crap0));
+      free_linkedlist(crap0);
+
+
+}
+END_TEST
+
+START_TEST(get_index_range_linkedlist_test)
+{
+#line 96
+      LinkedList *crap0 = create_linkedlist_range(0,1000);
+      int three_itter = 0;
+      for(three_itter = 0; three_itter <= 1000-3; three_itter++){
+      		      LinkedList *three = get_index_range_linkedlist(crap0, three_itter, three_itter+3);
+		      int i;
+		      for(i = 0; i < 3; i++){
+		      	    ///WE COULD WRITE A FUCKING MAP FUNCTION
+			    //we will need a linkedlist data that doesn't malloc or copy!!!!!!
+		      }
+      
+
+
+      }  
+      free_linkedlist(crap0);
+
+
+      
+
+}
+END_TEST
+
+START_TEST(linked_list_map)
+{
+#line 115
+      void *add_three(void *value){
+      	   int *newint = malloc(sizeof(int));
+	   assert(newint != NULL);
+	   *newint = 3 + *(int *)value;
+	   return ((void *) newint);
+      }
+      LinkedList *crap0 = create_linkedlist_range(0,1000);
+      LinkedList *crap1 = linkedlist_map(crap0, add_three);
+      int i;
+      LinkedListData *listhead = crap1->first;
+      for(i = 0; i < 1001; i++){
+      	    ck_assert(*((int *)listhead->data) == i + 3);
+      	    listhead = listhead->next;
+      }
+      free_linkedlist(crap0);
+      free_linkedlist(crap1);
+
+}
+END_TEST
+
+START_TEST(linked_list_filter_test)
+{
+#line 133
+      int test_even(void *value){  return (((*(int *) value) % 2) == 0); }
+      LinkedList *crap0 = create_linkedlist_range(0,1000);
+      LinkedList *crap1 = linkedlist_filter(crap0, test_even);
+      ck_assert(crap1->count == 501);
+      int i;
+      LinkedListData *listhead = crap1->first;
+      for(i = 0; i < 501; i++){
+      	   // printf("%d\n",i);
+       	    //printf("erg: %d\n", *((int *)listhead->data));
+	    listhead = listhead->next;
+      }
+      free_linkedlist(crap0);
+      free_linkedlist(crap1);
+
+}
+END_TEST
+
+START_TEST(linked_list_filter_free_test)
+{
+#line 148
+      int test_even(void *value){  return (((*(int *) value) % 2) == 0); }
+      LinkedList *crap0 = create_linkedlist_range(0,1000);
+      linkedlist_filter_free(crap0, test_even);
+      ck_assert(crap0->count == 501);
+      int i;
+      LinkedListData *listhead = crap0->first;
+      for(i = 0; i < 501; i++){
+      	   // printf("%d\n",i);
+       	    //printf("erg: %d\n", *((int *)listhead->data));
+	    listhead = listhead->next;
+      }
+      free_linkedlist(crap0);
+      
+
+}
+END_TEST
+
+START_TEST(linked_list_foldr_test)
+{
+#line 163
+      int add(void *value1, void *value2){
+      	  *(int *) value1 = *(int *) value1 + *(int *) value2;
+	  return 1;
+      
+      }
+      LinkedList *crap0 = create_linkedlist_range(0,100);
+      int base = 0;
+      linkedlist_foldr(crap0, add, (void *) &base);
+      ck_assert(base == 5050);
+      free_linkedlist(crap0);
+      
+}
+END_TEST
+
+START_TEST(linked_list_foldr_free_test)
+{
+#line 175
+            int add(void *value1, void *value2){
+      	  *(int *) value1 = *(int *) value1 + *(int *) value2;
+	  return 1;
+      
+      }
+      LinkedList *crap0 = create_linkedlist_range(0,100);
+      int base = 0;
+      linkedlist_foldr_free(crap0, add, (void *) &base);
+      ck_assert(base == 5050);
+
+}
+END_TEST
+
+START_TEST(linked_list_merge_free_test)
+{
+#line 186
+      LinkedList *crap0 = create_linkedlist_range(0,100);
+      LinkedList *crap1 = create_linkedlist_range(101,200);
+      linkedlist_merge_free(crap0, crap1);
+      int listitter;
+      ck_assert(crap0->count == 201);
+      LinkedListData *listhead = crap1->first;
+      for(listitter = 0; listitter < crap0->count; listitter++){
+      		    printf("We are on count %d\n", listitter);
+      		    ck_assert(listitter == *((int *) listhead->data ));
+		    listhead = listhead->next;	  
+      }
+
+            
+
       
 
 
 
 
 
-}
-END_TEST
 
-START_TEST(linkedlist_index_range)
-{
-#line 78
+
+
+
+
 
 }
 END_TEST
@@ -109,7 +282,15 @@ int main(void)
     suite_add_tcase(s1, tc1_1);
     tcase_add_test(tc1_1, test_linkedlist_create_and_append);
     tcase_add_test(tc1_1, linkedlist_index);
-    tcase_add_test(tc1_1, linkedlist_index_range);
+    tcase_add_test(tc1_1, create_linkedlist_range_test);
+    tcase_add_test(tc1_1, linkedlist_recount_test);
+    tcase_add_test(tc1_1, get_index_range_linkedlist_test);
+    tcase_add_test(tc1_1, linked_list_map);
+    tcase_add_test(tc1_1, linked_list_filter_test);
+    tcase_add_test(tc1_1, linked_list_filter_free_test);
+    tcase_add_test(tc1_1, linked_list_foldr_test);
+    tcase_add_test(tc1_1, linked_list_foldr_free_test);
+    tcase_add_test(tc1_1, linked_list_merge_free_test);
 
     srunner_run_all(sr, CK_ENV);
     nf = srunner_ntests_failed(sr);

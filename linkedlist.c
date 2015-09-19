@@ -26,6 +26,33 @@ LinkedListData *create_linkedlistdata(void *data,  size_t copysize){
   result->next = NULL;
   return result;
 }
+
+LinkedListData *create_linkedlistdata_inplace(void *data, size_t copysize){
+  assert(copysize > 0);
+  LinkedListData *result = malloc(sizeof(LinkedListData));
+  assert(result != NULL);
+  result->datasize = copysize;
+  result->data = data;
+  result->next = NULL;
+  return result;
+}
+
+int linkedlist_recount(LinkedList *list){
+  if(list->first == NULL){
+    return 0;
+
+  }
+  int count = 1;
+  LinkedListData *listhead = list->first; //what if it is a 0?
+  while( listhead->next != NULL){
+    count++;
+    listhead = listhead->next;
+  }
+  return count;
+
+
+}
+
 void free_linkedlistdata(LinkedListData *listhead){
   free((void *) listhead->data);
   free((void *) listhead);
@@ -33,6 +60,7 @@ void free_linkedlistdata(LinkedListData *listhead){
 
 
 void free_linkedlist(LinkedList *list){
+  //check for count == 0
   LinkedListData *listhead = list->first;
   LinkedListData *next;
   int listitter;
@@ -173,3 +201,170 @@ LinkedList *get_index_range_linkedlist(LinkedList *list, int start, int end){
 
 }
 
+LinkedList *linkedlist_map(LinkedList *list, MAP_F f ){
+  //f must malloc memory
+  int listcount = list->count;
+  int listitter;
+  LinkedList *new = create_linkedlist();
+  //create linked list to put new data in
+  //opeation for first element list:
+  LinkedListData *listhead = list->first;
+  new->first = create_linkedlistdata_inplace( (*f)(listhead->data), listhead->datasize);
+  LinkedListData *newlisthead = new->first;
+  for(listitter = 1; listitter < listcount; listitter++){
+    newlisthead->next = create_linkedlistdata_inplace( (*f)(listhead->next->data), listhead->next->datasize);
+    listhead = listhead->next;
+    newlisthead = newlisthead->next;
+  }
+  new->count = list->count;
+  return new;
+
+}
+
+LinkedList *linkedlist_map_inplace(LinkedList *list, MAP_F f){
+  int listcount = list->count;
+  int listitter;
+  LinkedListData *listhead = list->first;
+  //f should not malloc memory
+  for(listitter = 0; listitter < listcount; listitter++){
+    listhead->data = (*f)(listhead->data);
+    listhead = listhead->next;
+  }
+  return list;
+}
+
+
+LinkedList *linkedlist_filter(LinkedList *list, FILTER_F f){
+  int listcount = list->count;
+  int listitterw = 0;
+  int listitter;
+  LinkedListData *listhead = list->first;
+  LinkedListData *newlisthead;
+  LinkedList *new = create_linkedlist();
+  while (! (*f)(listhead->data)){
+    listitterw++;
+    listhead = listhead->next; //segfault is none of them meet the condtions?
+  }
+  listitterw++;
+  new->first = create_linkedlistdata(listhead->data, listhead->datasize);
+  newlisthead = new->first;
+  listhead = listhead->next;
+  new->count++;
+  for(listitter = listitterw; listitter < listcount; listitter++){
+    //printf("itter: %d\n", listitter);
+    if((*f)(listhead->data)){
+      newlisthead->next = create_linkedlistdata(listhead->data, listhead->datasize);
+      newlisthead = newlisthead->next;
+      new->count++;
+    }
+    listhead = listhead->next; 
+  }
+  
+  return new;
+
+}
+LinkedList *linkedlist_filter_free(LinkedList *list, FILTER_F f){
+  int listcount = list->count;
+  int numbermatched = 0;
+  int listwalk = 0;
+  LinkedListData *listhead = list->first;
+  LinkedListData *listend;
+  LinkedListData *listtemp;
+  //find the new head of the list
+  while (! (*f)(listhead->data)){
+    listwalk++;
+    listtemp = listhead->next; //segfault is none of them meet the condtions?
+    free_linkedlistdata(listhead);
+    listhead = listtemp;
+  }
+  numbermatched++;
+  listwalk++;
+  list->first = listhead;
+  listend = list->first;
+  listhead = listhead->next;
+  
+  while (listwalk < listcount){
+    if ((*f)(listhead->data)){
+     
+      numbermatched++;
+      listend->next = listhead;
+      listend = listend->next;
+      listhead = listhead->next;
+    }
+    else{
+     
+      listtemp = listhead->next;
+      free_linkedlistdata(listhead);
+      listhead = listtemp;
+
+    }
+    listwalk++;
+    
+  }
+  list->count = numbermatched;
+  return list;
+  
+
+}
+
+
+void *linkedlist_foldr(LinkedList *list, FOLD_F f, void *base){
+  int listcount = list->count;
+  LinkedListData *listhead = list->first;
+  int listitter;
+  int okay;
+  for(listitter = 0; listitter < listcount; listitter++){
+    okay = (*f)(base, listhead->data);
+    if(! okay){
+      return NULL;
+    }
+    listhead = listhead->next;
+  }
+
+  return base;
+
+}
+
+void *linkedlist_foldr_free(LinkedList *list, FOLD_F f, void *base){
+  int listcount = list->count;
+  LinkedListData *listhead = list->first;
+  LinkedListData *temp;
+  int listitter;
+  int okay;
+  for(listitter = 0; listitter < listcount; listitter++){
+    okay = (*f)(base, listhead->data);
+    if(! okay){ //if everything fails, we should still clean up because otherwise we get a leak!
+      for(int freelistitter = listitter; freelistitter < listcount; freelistitter++){
+	temp = listhead->next;
+	free_linkedlistdata(listhead);
+	listhead = temp;
+      }
+      return NULL;
+    }
+    temp = listhead->next;
+    free_linkedlistdata(listhead);
+    listhead = temp;
+  }
+  free((void *) list);
+
+  return base;
+
+}
+//maybe make one that doesn't consume the other list?
+LinkedList *linkedlist_merge_free(LinkedList *list1, LinkedList *list2){
+  int listitter;
+  int listcount1 = list1->count;
+  LinkedListData *list1head = list1->first;
+  LinkedListData *list2head = list2->first;
+  list1->count += list2->count;
+  //at which point we no longer need the head for list2
+  //free((void *) list2);
+  for(listitter = 0; listitter < listcount1; listitter++){
+    list1head = list1head->next;
+  }
+
+  list1head->next = list2head; //would it be faster to just compare their lengths
+  return list1;
+
+  
+}

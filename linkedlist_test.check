@@ -1,5 +1,5 @@
 #include "linkedlist.h"
-
+#include <assert.h>
 
 #test test_linkedlist_create_and_append
   LinkedList *crap0 = create_linkedlist();
@@ -86,21 +86,127 @@
 	    listhead = listhead->next;
       }
       free_linkedlist(crap0);
+#test linkedlist_recount_test
+      LinkedList *crap0 = create_linkedlist_range(1,100);
+      ck_assert(100 == linkedlist_recount(crap0));
+      free_linkedlist(crap0);
+
 
 #test get_index_range_linkedlist_test
-      LinkedList *crap0 = create_linked_range(0,1000);
+      LinkedList *crap0 = create_linkedlist_range(0,1000);
       int three_itter = 0;
       for(three_itter = 0; three_itter <= 1000-3; three_itter++){
       		      LinkedList *three = get_index_range_linkedlist(crap0, three_itter, three_itter+3);
 		      int i;
 		      for(i = 0; i < 3; i++){
 		      	    ///WE COULD WRITE A FUCKING MAP FUNCTION
+			    //we will need a linkedlist data that doesn't malloc or copy!!!!!!
 		      }
       
 
 
-      }      
+      }  
+      free_linkedlist(crap0);
 
 
       
+
+#test linked_list_map
+      void *add_three(void *value){
+      	   int *newint = malloc(sizeof(int));
+	   assert(newint != NULL);
+	   *newint = 3 + *(int *)value;
+	   return ((void *) newint);
+      }
+      LinkedList *crap0 = create_linkedlist_range(0,1000);
+      LinkedList *crap1 = linkedlist_map(crap0, add_three);
+      int i;
+      LinkedListData *listhead = crap1->first;
+      for(i = 0; i < 1001; i++){
+      	    ck_assert(*((int *)listhead->data) == i + 3);
+      	    listhead = listhead->next;
+      }
+      free_linkedlist(crap0);
+      free_linkedlist(crap1);
+
+#test linked_list_filter_test
+      int test_even(void *value){  return (((*(int *) value) % 2) == 0); }
+      LinkedList *crap0 = create_linkedlist_range(0,1000);
+      LinkedList *crap1 = linkedlist_filter(crap0, test_even);
+      ck_assert(crap1->count == 501);
+      int i;
+      LinkedListData *listhead = crap1->first;
+      for(i = 0; i < 501; i++){
+      	   // printf("%d\n",i);
+       	    //printf("erg: %d\n", *((int *)listhead->data));
+	    listhead = listhead->next;
+      }
+      free_linkedlist(crap0);
+      free_linkedlist(crap1);
+
+#test linked_list_filter_free_test
+      int test_even(void *value){  return (((*(int *) value) % 2) == 0); }
+      LinkedList *crap0 = create_linkedlist_range(0,1000);
+      linkedlist_filter_free(crap0, test_even);
+      ck_assert(crap0->count == 501);
+      int i;
+      LinkedListData *listhead = crap0->first;
+      for(i = 0; i < 501; i++){
+      	   // printf("%d\n",i);
+       	    //printf("erg: %d\n", *((int *)listhead->data));
+	    listhead = listhead->next;
+      }
+      free_linkedlist(crap0);
+      
+
+#test linked_list_foldr_test
+      int add(void *value1, void *value2){
+      	  *(int *) value1 = *(int *) value1 + *(int *) value2;
+	  return 1;
+      
+      }
+      LinkedList *crap0 = create_linkedlist_range(0,100);
+      int base = 0;
+      linkedlist_foldr(crap0, add, (void *) &base);
+      ck_assert(base == 5050);
+      free_linkedlist(crap0);
+      
+#test linked_list_foldr_free_test
+            int add(void *value1, void *value2){
+      	  *(int *) value1 = *(int *) value1 + *(int *) value2;
+	  return 1;
+      
+      }
+      LinkedList *crap0 = create_linkedlist_range(0,100);
+      int base = 0;
+      linkedlist_foldr_free(crap0, add, (void *) &base);
+      ck_assert(base == 5050);
+
+#test linked_list_merge_free_test
+      LinkedList *crap0 = create_linkedlist_range(0,100);
+      LinkedList *crap1 = create_linkedlist_range(101,200);
+      linkedlist_merge_free(crap0, crap1);
+      int listitter;
+      ck_assert(crap0->count == 201);
+      ck_assert(201 == linkedlist_recount(crap0));
+      LinkedListData *listhead = crap1->first;
+      for(listitter = 0; listitter < crap0->count; listitter++){
+      		    printf("We are on count %d\n", listitter);
+      		    ck_assert(listitter == *((int *) listhead->data ));
+		    listhead = listhead->next;	  
+      }
+
+            
+
+      
+
+
+
+
+
+
+
+
+
+
 
