@@ -13,5 +13,5 @@ I plan to implement hashmaps, doublies, trees, and all that fun stuff once I hav
 
 
 Other
-------
+---------------------
 Compiling with just 'make' is to compile test.c while make linkedlist_test compiles the tests for linkedlists. There is a make clean.
