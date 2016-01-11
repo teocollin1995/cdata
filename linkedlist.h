@@ -52,6 +52,26 @@ LinkedList *linkedlist_merge_free(LinkedList *list1, LinkedList *list2);
 //in operator - raw data comparison? - size of data
 //for each? 
 //index
+/* LinkedList *linkedlist_deepcopy(LinkedList *list); */
+/* LinkedList *linkedlist_merge(LinkedList *list1, LinkedList *list2); */
+/* LinkedListData *linkedlist_pop(LinkedList *list);  */
+/* LinkedList *linkedlist_push(LinkedList *list, LinkedListData *data); //current progress */
+/* LinkedList *linkedlist_push_data(LinkedList *list, void *data, size_t datasize); */
+/* LinkedList *linkedlist_insert(LinkedList *list, LinkedListData *data); */
+/* LinkedList *linkedlist_insert(LinkedList *list, void *data, size_t datasize); */
+/* LinkedList *linkedlist_remove(LinkedList *list, int index); */
+/* LinkedList *linkedlist_reverse(LinkedList *list); */
+/* LinkedList *linkedlist_clear(LinkedList *list); //free all but the Linkedlist struct */
+/* int linkedlist_in(LinkedList *list, void *data, size_t datasize); //memcmp */
+/* //LinkedList *linkedlist_filter_by_datasize - both */
+/* //for each loop? */
+/* int linkedlist_index(LinkedList *list, void *data, size_t datasize); //memcmp https://stackoverflow.com/questions/16712364/mem-compare-arrays-to-get-number-of-matching-bytes */
+/* //intersparse  */
+/* void **linkedlist_to_array(Linkedlist *list); */
+/* void **linkedlist_to_array_by_data(Linkedlist *list, size_t datasize); */
+/* //in operator - raw data comparison? - size of data */
+/* //free while - drop while? */
+/* //index */
 #endif
 
 

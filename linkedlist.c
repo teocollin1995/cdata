@@ -359,7 +359,7 @@ LinkedList *linkedlist_merge_free(LinkedList *list1, LinkedList *list2){
   list1->count += list2->count;
   //at which point we no longer need the head for list2
   //free((void *) list2);
-  for(listitter = 0; listitter < listcount1; listitter++){
+  for(listitter = 0; listitter < listcount1 - 1; listitter++){
     list1head = list1head->next;
   }
 

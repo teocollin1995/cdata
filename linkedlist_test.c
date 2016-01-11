@@ -24,9 +24,9 @@ START_TEST(test_linkedlist_create_and_append)
   char *d = "abc\0";
   char *e = "efg\0";
   char *f = "qwe\0";
-  append_to_linkedlist(crap2, (void *) d, (size_t) strlen(d));
-  append_to_linkedlist(crap1, (void *) e, (size_t) strlen(e));	
-  append_to_linkedlist(crap0, (void *) f, (size_t) strlen(f));
+  append_to_linkedlist(crap2, (void *) d, (size_t) strlen(d)+1);
+  append_to_linkedlist(crap1, (void *) e, (size_t) strlen(e)+1);	
+  append_to_linkedlist(crap0, (void *) f, (size_t) strlen(f)+1);
   LinkedList *crap3 = create_linkedlist();
   short g = 0;
   short h = 1;
@@ -52,15 +52,15 @@ START_TEST(test_linkedlist_create_and_append)
   ck_assert_int_eq(crap2->count, 3);
   ck_assert_int_eq(crap1->count, 4);
   ck_assert_int_eq(crap0->count, 5);
-  ck_assert_int_eq(*((int *) crap0->first->next->next->next->next->data), 4);
-  ck_assert_int_eq(*((int *) crap1->first->next->next->next->data), 3);
-  ck_assert_int_eq(*((int *) crap2->first->next->next->data), 2);
-  ck_assert_int_eq(*((int *) crap3->first->next->data), 1);
-  ck_assert_int_eq(*((int *) crap4->first->data), 5);
-  ck_assert_int_eq(*((int *) crap0->first->next->next->next->data), 3);
-  ck_assert_int_eq(*((int *) crap1->first->next->next->data), 2);
-  ck_assert_int_eq(*((int *) crap2->first->next->data), 1);
-  ck_assert_int_eq(*((int *) crap3->first->data), 0);
+  ck_assert_int_eq(*((short *) crap0->first->next->next->next->next->data), 4);
+  ck_assert_int_eq(*((short *) crap1->first->next->next->next->data), 3);
+  ck_assert_int_eq(*((short *) crap2->first->next->next->data), 2);
+  ck_assert_int_eq(*((short *) crap3->first->next->data), 1);
+  ck_assert_int_eq(*((short *) crap4->first->data), 5);
+  ck_assert_int_eq(*((short *) crap0->first->next->next->next->data), 3);
+  ck_assert_int_eq(*((short *) crap1->first->next->next->data), 2);
+  ck_assert_int_eq(*((short *) crap2->first->next->data), 1);
+  ck_assert_int_eq(*((short *) crap3->first->data), 0);
   ck_assert_str_eq(( (char *) crap0->first->next->next->data), "qwe");
   ck_assert_str_eq(((char *) crap1->first->next->data), "efg");
   ck_assert_str_eq(((char *) crap2->first->data), "abc");
@@ -248,9 +248,10 @@ START_TEST(linked_list_merge_free_test)
       linkedlist_merge_free(crap0, crap1);
       int listitter;
       ck_assert(crap0->count == 201);
-      LinkedListData *listhead = crap1->first;
+      ck_assert(201 == linkedlist_recount(crap0));
+      LinkedListData *listhead = crap0->first;
       for(listitter = 0; listitter < crap0->count; listitter++){
-      		    printf("We are on count %d\n", listitter);
+      		    //printf("We are on count %d\n", listitter);
       		    ck_assert(listitter == *((int *) listhead->data ));
 		    listhead = listhead->next;	  
       }
